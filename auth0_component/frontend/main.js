@@ -17,6 +17,7 @@ const errorNode = div.appendChild(document.createTextNode(""))
 let client_id
 let domain
 let auth0
+const cookieDomain = '.arbi.city'   //Hardcoded in this version for testing.
 
 const logout = async () => {
   auth0.logout({returnTo: getOriginUrl()})
@@ -35,8 +36,10 @@ const login = async () => {
       audience:`https://${domain}/api/v2/`,
       useRefreshTokens: true,
       cacheLocation: "localstorage",
+      cookieDomain: cookieDomain,
     });
     try{
+      console.log(`auth0.loginWithPopup. cookieDomain -- ${cookieDomain}`)    //debug
       await auth0.loginWithPopup();
       errorNode.textContent = ''
     }
