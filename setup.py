@@ -1,11 +1,11 @@
 import setuptools
 
 setuptools.setup(
-    name="streamlit-auth0-component",
-    version="0.1.5",
-    author="",
-    author_email="",
-    description="",
+    name="streamlit-auth0-component-ac",
+    version="0.1.6",
+    author="Paul Marini",
+    author_email="paul.marini@arbi.city",
+    description="A fork of conradbez/streamlit-auth0",
     long_description="",
     long_description_content_type="text/plain",
     url="",
