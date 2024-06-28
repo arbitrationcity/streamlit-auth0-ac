@@ -22,11 +22,11 @@ from six.moves.urllib.request import urlopen
 from functools import wraps
 from jose import jwt
 
-def getVerifiedSubFromToken(token, domain):
+def getVerifiedSubFromToken(token, domain, audience):
     domain = "https://"+domain
-    if not re.match(r".*\.auth0\.com$", domain):
-        print('domain should end with ".XX.auth0.com" (no trailing slash)')
-        raise ValueError
+    # if not re.match(r".*\.auth0\.com$", domain):                                  #^-- handle abritrary custom domain
+    #     print('domain should end with ".XX.auth0.com" (no trailing slash)')
+    #     raise ValueError
     jsonurl = urlopen(domain+"/.well-known/jwks.json")
     jwks = json.loads(jsonurl.read())
     unverified_header = jwt.get_unverified_header(token)
@@ -46,7 +46,8 @@ def getVerifiedSubFromToken(token, domain):
                 token,
                 rsa_key,
                 algorithms=["RS256"],
-                audience=domain+"/api/v2/",
+                # audience=domain+"/api/v2/",
+                audience=audience,
                 issuer=domain+'/'
             )
         except jwt.ExpiredSignatureError:
@@ -58,7 +59,7 @@ def getVerifiedSubFromToken(token, domain):
 
         return payload['sub']
 
-def login_button(clientId, domain,key=None, **kwargs):
+def login_button(clientId, domain, audience, key=None, **kwargs):
     """Create a new instance of "login_button".
     Parameters
     ----------
@@ -67,6 +68,9 @@ def login_button(clientId, domain,key=None, **kwargs):
     
     domain: str
         domain per auth0 config on your Applications / Settings page in the form dev-xxxx.xx.auth0.com
+        OR!  a custom domain, any FQDN
+    audience: str
+        audience of api. Default api is https://{tenant}.xx.auth0.com/api/v2
     key: str or None
         An optional key that uniquely identifies this component. If this is
         None, and the component's arguments are changed, the component will
@@ -77,17 +81,17 @@ def login_button(clientId, domain,key=None, **kwargs):
         User info
     """
 
-    user_info = _login_button(client_id=clientId, domain = domain, key=key, default=0)
+    user_info = _login_button(client_id=clientId, domain=domain, audience=audience, key=key, default=0)
     if not user_info:
         return False
-    elif isAuth(response = user_info, domain = domain):
+    elif isAuth(response = user_info, domain=domain, audience=audience):
         return user_info
     else:
         print('Auth failed: invalid token')
         raise 
 
-def isAuth(response, domain):
-    return getVerifiedSubFromToken(token = response['token'], domain=domain) == response['sub']
+def isAuth(response, domain, audience):
+    return getVerifiedSubFromToken(token = response['token'], domain=domain, audience=audience) == response['sub']
 
 if not _RELEASE:
     import streamlit as st
@@ -97,8 +101,9 @@ if not _RELEASE:
 
     clientId = os.environ['clientId']
     domain = os.environ['domain']
+    audience = os.environ['audience']
     st.subheader("Login component")
-    user_info = login_button(clientId, domain = domain)
+    user_info = login_button(clientId, domain=domain, audience=audience)
     # user_info = login_button(clientId = "...", domain = "...")
     st.write('User info')
     st.write(user_info)
