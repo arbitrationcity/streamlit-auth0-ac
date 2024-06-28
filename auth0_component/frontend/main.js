@@ -17,7 +17,7 @@ const errorNode = div.appendChild(document.createTextNode(""))
 let client_id
 let domain
 let auth0
-const cookieDomain = '.arbi.city'   //Hardcoded in this version for testing.
+let audience
 
 const logout = async () => {
   auth0.logout({returnTo: getOriginUrl()})
@@ -33,13 +33,11 @@ const login = async () => {
       domain: domain,
       client_id: client_id,
       redirect_uri: getOriginUrl(),
-      audience:`https://${domain}/api/v2/`,
+      audience: audience,
       useRefreshTokens: true,
       cacheLocation: "localstorage",
-      cookieDomain: cookieDomain,
     });
     try{
-      console.log(`auth0.loginWithPopup. cookieDomain -- ${cookieDomain}`)    //debug
       await auth0.loginWithPopup();
       errorNode.textContent = ''
     }
@@ -52,7 +50,7 @@ const login = async () => {
     console.log(user)
     console.log({
       // return getAccessTokenWithPopup({
-        audience:`https://${domain}/api/v2/`,
+        audience: audience, 
         scope: "read:current_user",
       })
     let token = false
@@ -60,7 +58,7 @@ const login = async () => {
     try{
     token = await auth0.getTokenSilently({
         // return getAccessTokenWithPopup({
-          audience:`https://${domain}/api/v2/`,
+          audience: audience, 
           // scope: "read:current_user",
         });
       }
@@ -68,7 +66,7 @@ const login = async () => {
         if (error.error === 'consent_required' || error.error === 'login_required'){
           console.log('asking user for permission to their profile')
            token = await auth0.getTokenWithPopup({
-              audience:`https://${domain}/api/v2/`,
+              audience: audience, 
               scope: "read:current_user",
             });
             console.log(token)
@@ -92,6 +90,7 @@ function onRender(event) {
   
   client_id = data.args["client_id"]
   domain = data.args["domain"]
+  audience = data.args["audience"]
 
   Streamlit.setFrameHeight()
 }
