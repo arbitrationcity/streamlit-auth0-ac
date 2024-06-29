@@ -24,6 +24,7 @@ let audience
 
 const logout = async () => {
   auth0.logout({returnTo: getOriginUrl()})
+  Streamlit.setComponentValue(false)
   button.textContent = "Login"
   button.removeEventListener('click', logout)
   button.addEventListener('click', login)
@@ -40,6 +41,10 @@ const login = async () => {
       useRefreshTokens: true,
       cacheLocation: "localstorage",
     });
+
+    // Remove the event listener for login before adding a new one for logout
+    button.removeEventListener('click', login);
+
     try{
       await auth0.loginWithPopup();
       errorNode.textContent = ''
@@ -86,7 +91,9 @@ const login = async () => {
     button.addEventListener('click', logout)
 }
 
-button.onclick = login
+// Make sure to initialize the button's event listener with the login function
+button.addEventListener('click', login);
+//button.onclick = login
 
 function onRender(event) {
   const data = event.detail
