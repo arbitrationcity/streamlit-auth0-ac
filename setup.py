@@ -2,10 +2,10 @@ import setuptools
 
 setuptools.setup(
     name="streamlit-auth0-component-ac",
-    version="0.1.6.0.0.0.3",
+    version="0.2.1.1",
     author="Paul Marini",
     author_email="paul.marini@arbi.city",
-    description="A fork of conradbez/streamlit-auth0. Changing the audience to be specifically set do we can use custom domain",
+    description="A fork of conradbez/streamlit-auth0, updated with patch from dhirajpatil19/streamlit-auth0. Changing the audience to be specifically set do we can use custom domain",
     long_description="",
     long_description_content_type="text/plain",
     url="",
