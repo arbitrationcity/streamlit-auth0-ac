@@ -9,9 +9,12 @@ const button = div.appendChild(document.createElement("button"))
 button.className = "log"
 button.textContent = "Login"
 
-// set flex collumn so the error message appears under the button
-div.style = "display: flex; flex-direction: column; color: rgb(104, 85, 224); font-weight: 600; margin: 0; padding: 10px"
-const errorNode = div.appendChild(document.createTextNode(""))
+// set flex column so the error message appears under the button
+div.style = "display: flex; flex-direction: column; margin: 0; padding: 10px"
+const errorDiv = div.appendChild(document.createElement("div"))
+errorDiv.className = "error"
+errorDiv.style = "display: block; padding: 4px; color: rgba(255, 108, 108, .8); font-family: 'Source Sans Pro', sans-serif; font-size: .95rem;"
+const errorNode = errorDiv.appendChild(document.createTextNode(""))
 
 // Global vars
 let client_id
