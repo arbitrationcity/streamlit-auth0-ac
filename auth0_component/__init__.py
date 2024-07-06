@@ -1,8 +1,10 @@
 import os
-import re
 import streamlit.components.v1 as components
+import json
+from urllib import request
+from jose import jwt
 
-_RELEASE = False
+# _RELEASE = False
 _RELEASE = True
 
 
@@ -17,50 +19,12 @@ else:
   _login_button = components.declare_component("login_button", path=build_dir)
 
 
-import json
-from six.moves.urllib.request import urlopen
-from functools import wraps
-from jose import jwt
-
-def getVerifiedSubFromToken(token, domain, audience):
-    domain = "https://"+domain
-    # if not re.match(r".*\.auth0\.com$", domain):                                  #^-- handle abritrary custom domain
-    #     print('domain should end with ".XX.auth0.com" (no trailing slash)')
-    #     raise ValueError
-    jsonurl = urlopen(domain+"/.well-known/jwks.json")
-    jwks = json.loads(jsonurl.read())
-    unverified_header = jwt.get_unverified_header(token)
-    rsa_key = {}
-    for key in jwks["keys"]:
-        if key["kid"] == unverified_header["kid"]:
-            rsa_key = {
-                "kty": key["kty"],
-                "kid": key["kid"],
-                "use": key["use"],
-                "n": key["n"],
-                "e": key["e"]
-            }
-    if rsa_key:
-        try:
-            payload = jwt.decode(
-                token,
-                rsa_key,
-                algorithms=["RS256"],
-                # audience=domain+"/api/v2/",
-                audience=audience,
-                issuer=domain+'/'
-            )
-        except jwt.ExpiredSignatureError:
-            raise 
-        except jwt.JWTClaimsError:
-            raise 
-        except Exception:
-            raise 
-
-        return payload['sub']
 
 def login_button(clientId, domain, audience, key=None, **kwargs):
-    """Create a new instance of "login_button".
+    """
+    Create a new instance of "login_button".
+    When the user logs in, check if the sub returned from Auth0 matches the verified sub from the token from the same response.
+
     Parameters
     ----------
     clientId: str
@@ -82,6 +46,7 @@ def login_button(clientId, domain, audience, key=None, **kwargs):
     """
 
     user_info = _login_button(client_id=clientId, domain=domain, audience=audience, key=key, default=0)
+
     if not user_info:
         return False
     elif isAuth(response = user_info, domain=domain, audience=audience):
@@ -90,10 +55,50 @@ def login_button(clientId, domain, audience, key=None, **kwargs):
         print('Auth failed: invalid token')
         raise 
 
+
 def isAuth(response, domain, audience):
     return getVerifiedSubFromToken(token = response['token'], domain=domain, audience=audience) == response['sub']
 
+
+def getVerifiedSubFromToken(token, domain, audience):
+    well_known_url = f"https://{domain}/.well-known/jwks.json"
+    req = request.Request(well_known_url, headers={'User-Agent': 'Mozilla'})   #can be any user agent, but needs one included
+    opened_url = request.urlopen(req)
+    jwks = json.loads(opened_url.read())
+    unverified_header = jwt.get_unverified_header(token)
+    rsa_key = {}
+    for key in jwks["keys"]:
+        if key["kid"] == unverified_header["kid"]:
+            rsa_key = {
+                "kty": key["kty"],
+                "kid": key["kid"],
+                "use": key["use"],
+                "n": key["n"],
+                "e": key["e"]
+            }
+    if rsa_key:
+        try:
+            payload = jwt.decode(
+                token,
+                rsa_key,
+                algorithms=["RS256"],
+                audience=audience,
+                issuer=f'https://{domain}/'
+            )
+        except jwt.ExpiredSignatureError:
+            raise 
+        except jwt.JWTClaimsError:
+            raise 
+        except Exception:
+            raise 
+
+        return payload['sub']
+
+
+
+
 if not _RELEASE:
+    # NOTE: if running as not _RELEASE with the dev server, create a .env file with clientId, domain, and audience values
     import streamlit as st
     from dotenv import load_dotenv
     import os
@@ -103,9 +108,8 @@ if not _RELEASE:
     domain = os.environ['domain']
     audience = os.environ['audience']
     st.subheader("Login component")
-    user_info = login_button(clientId, domain=domain, audience=audience)
-    # user_info = login_button(clientId = "...", domain = "...")
+    # user_info = login_button(clientId, domain=domain, audience=audience)                                        #debug
     st.write('User info')
-    st.write(user_info)
+    # st.write(user_info)
     if st.button('rerun'):
         st.experimental_rerun()
