@@ -4,19 +4,35 @@
 
 ![Example of Streamlit-Auth0|635x380](demo.gif?raw=true)
 
-## Installation
-`pip install streamlit-auth0-component`
+## DEV Installation
+1. Copy or clone the main branch into the local directory /custom_components/ as streamlit-auth0-ac/
+
+2. Build
+`cd custom_components/streamlit-auth0-ac/auth0_component/frontend/  &&  npm install  &&  npm run build  &&  cd  ../../../../`
+
+3. Use pip (or conda, etc) to install locally
+`pip install custom_components/streamlit-auth0-ac`
+
+4. Now you can rebuild and reinstall if any changes are made
+
+
+## PRODUCTION Installation
+1. Copy or clone the production branch into the local directory /custom_components/ as streamlit-auth0-ac/
+
+2. Use pip (or conda, etc) to install locally
+`pip install custom_components/streamlit-auth0-ac`
+
 
 ## Setup
 
 - Register for Auth0
 - Create a Single Page Application and navigate to the "settings" tab 
 - set your callback url's to `http://localhost:8501/component/auth0_component.login_button/index.html` assuming you're running on localhost or `http://YOUR_DOMAIN/component/auth0_component.login_button/index.html` if you're deploying
-- Copy `client_id` and `domain` from this page
+- Copy `client_id` from this page, `domain` is your custom domain registered with Auth0. `audience` is the audience id of the auth0 API (the default is `https://{tenant}.eu.auth0.com`).
 - Follow example below
 
 ## An example
-On Auth0 website start a "Single Page Web Application" and copy your client-id / domain (of form xxxx.us.auth0.com) into code below.
+On Auth0 website start a "Single Page Web Application" and copy your client-id / domain / audience into code below.
 
 ```
 from auth0_component import login_button
@@ -24,8 +40,9 @@ import streamlit as st
 
 clientId = "...."
 domain = "...."
+audience = "...."
 
-user_info = login_button(clientId, domain = domain)
+user_info = login_button(clientId, domain = domain, audience = audience)       
 st.write(user_info)
 ```
 
