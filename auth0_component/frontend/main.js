@@ -10,7 +10,8 @@ button.className = "log"
 button.textContent = "Login"
 
 // set flex column so the error message appears under the button
-div.style = "display: flex; flex-direction: column; margin: 0; padding: 10px"
+div.style = "display: flex; flex-direction: column; margin: 0; padding: 10px;"
+//TODO: set errorDiv.style height to 0 when empty (default). set it to ~40px (?) when showing message. set iframe height attr to height+40. 
 const errorDiv = div.appendChild(document.createElement("div"))
 errorDiv.className = "error"
 errorDiv.style = "display: block; padding: 4px; color: rgba(255, 108, 108, .8); font-family: 'Source Sans Pro', sans-serif; font-size: .95rem;"
@@ -19,11 +20,11 @@ const errorNode = errorDiv.appendChild(document.createTextNode(""))
 // Global vars
 let client_id
 let domain
-let auth0
 let audience
+let auth0
 
 const logout = async () => {
-  auth0.logout({returnTo: getOriginUrl()})
+  auth0.logout({ returnTo: getOriginUrl() })
   Streamlit.setComponentValue(false)
   button.textContent = "Login"
   button.removeEventListener('click', logout)
@@ -34,61 +35,55 @@ const login = async () => {
   button.textContent = 'working...'
   console.log('Callback urls set to: ', getOriginUrl())
   auth0 = await createAuth0Client({
-      domain: domain,
-      client_id: client_id,
-      redirect_uri: getOriginUrl(),
-      audience: audience,
-      useRefreshTokens: true,
-      cacheLocation: "localstorage",
-    });
+    domain: domain,
+    client_id: client_id,
+    redirect_uri: getOriginUrl(),
+    audience: audience,
+    useRefreshTokens: true,
+    cacheLocation: "localstorage",
+  });
 
-    // Remove the event listener for login before adding a new one for logout
-    button.removeEventListener('click', login);
+  // Remove the event listener for login before adding a new one for logout
+  button.removeEventListener('click', login);
 
-    try{
-      await auth0.loginWithPopup();
-      errorNode.textContent = ''
-    }
-    catch(err){
-      console.log(err)
-      errorNode.textContent = `Popup blocked, please try again or enable popups` + String.fromCharCode(160)
-      return
-    }
-    const user = await auth0.getUser();
-    console.log(user)
-    console.log({
-      // return getAccessTokenWithPopup({
-        audience: audience, 
-        scope: "read:current_user",
-      })
-    let token = false
-    
-    try{
+  try {
+    await auth0.loginWithPopup();
+    errorNode.textContent = ''
+  }
+  catch (err) {
+    console.error(err)
+    errorNode.textContent = `Popup blocked, please try again or enable popups` + String.fromCharCode(160)
+    //TODO: handle the actual errors that come in and don't assume. They are returned as query params
+    return
+  }
+  const user = await auth0.getUser();
+  console.log(user)     //debug
+  let token = false
+
+  try {
     token = await auth0.getTokenSilently({
-        // return getAccessTokenWithPopup({
-          audience: audience, 
-          // scope: "read:current_user",
-        });
-      }
-      catch(error){
-        if (error.error === 'consent_required' || error.error === 'login_required'){
-          console.log('asking user for permission to their profile')
-           token = await auth0.getTokenWithPopup({
-              audience: audience, 
-              scope: "read:current_user",
-            });
-            console.log(token)
-        }
-        else{console.log(error)}
-      }
+      audience: audience,
+    });
+  }
+  catch (error) {
+    if (error.error === 'consent_required' || error.error === 'login_required') {
+      console.log('asking user for permission to their profile')
+      token = await auth0.getTokenWithPopup({
+        audience: audience,
+        scope: "read:current_user",
+      });
+      console.log(token)    //debug
+    }
+    else { console.error(error) }
+  }
 
-    let userCopy = JSON.parse(JSON.stringify(user));
-    userCopy.token = token
-    console.log(userCopy);
-    Streamlit.setComponentValue(userCopy)
-    button.textContent = "Logout"
-    button.removeEventListener('click', login)
-    button.addEventListener('click', logout)
+  let userCopy = JSON.parse(JSON.stringify(user));
+  userCopy.token = token
+  console.log(userCopy);        //debug
+  Streamlit.setComponentValue(userCopy)
+  button.textContent = "Logout"
+  button.removeEventListener('click', login)
+  button.addEventListener('click', logout)
 }
 
 // Make sure to initialize the button's event listener with the login function
@@ -97,14 +92,13 @@ button.addEventListener('click', login);
 
 function onRender(event) {
   const data = event.detail
-  
+
   client_id = data.args["client_id"]
   domain = data.args["domain"]
   audience = data.args["audience"]
 
   Streamlit.setFrameHeight()
 }
-
 
 Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender)
 Streamlit.setComponentReady()
