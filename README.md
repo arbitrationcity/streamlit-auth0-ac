@@ -5,19 +5,20 @@
 ![Example of Streamlit-Auth0|635x380](demo.gif?raw=true)
 
 ## DEV Installation
-1. Copy or clone the main branch into the local directory /custom_components/ as streamlit-auth0-ac/
+1. If custom_components doesn't already exist, `mkdir custom_components && cd custom_components`
+ 
+3. `git clone git@github.com:arbitrationcity/streamlit-auth0-ac.git`
 
-2. Build
-`cd custom_components/streamlit-auth0-ac/auth0_component/frontend/  &&  npm install  &&  npm run build  &&  cd  ../../../../`
+4. Build: `cd streamlit-auth0-ac/auth0_component/frontend/  &&  npm install  &&  npm run build  &&  cd  ../../../../`
 
-3. Use pip (or conda, etc) to install locally
+4. Use pip (or conda, etc) to install locally
 `pip install custom_components/streamlit-auth0-ac`
 
-4. Now you can rebuild and reinstall if any changes are made
+5. Now you can rebuild and reinstall if any changes are made, or you can delete custom_components/
 
 
 ## PRODUCTION Installation
-1. Copy or clone the production branch into the local directory /custom_components/ as streamlit-auth0-ac/
+1. Copy or clone the production branch into the local directory custom_components/ as streamlit-auth0-ac/
 
 2. Use pip (or conda, etc) to install locally
 `pip install custom_components/streamlit-auth0-ac`
