@@ -18,10 +18,9 @@
 
 
 ## PRODUCTION Installation
-1. Copy or clone the production branch into the local directory custom_components/ as streamlit-auth0-ac/
+1. Install directly from the production branch:
 
-2. Use pip (or conda, etc) to install locally
-`pip install custom_components/streamlit-auth0-ac`
+2. `pip install git+https://github.com/arbitrationcity/streamlit-auth0-ac.git@production`
 
 
 ## Setup
