@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(
-    name="streamlit-auth0-component-ac",
+    name="streamlit-auth0-ac",
     version="0.2.2",
     author="Paul Marini",
     author_email="paul.marini@arbi.city",
