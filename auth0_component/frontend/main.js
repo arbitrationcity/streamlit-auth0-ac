@@ -52,9 +52,13 @@ const login = async () => {
     errorNode.textContent = ''
   }
   catch (err) {
-    console.error(err)
-    errorNode.textContent = `Popup blocked, please try again or enable popups` + String.fromCharCode(160)
-    //TODO: handle the actual errors that come in and don't assume. They are returned as query params
+    console.error(`auth0_component error: ${err}`)
+    console.log(`auth0_component url: ${window.location.host} - ${window.location.pathname} - ${window.location.search}`)//debug
+    errorNode.textContent = err;
+    Streamlit.setFrameHeight()
+    button.textContent = "Login"
+    button.removeEventListener('click', logout)
+    button.addEventListener('click', login)
     return
   }
   const user = await auth0.getUser();
