@@ -60,8 +60,16 @@ const login = async () => {
     button.addEventListener('click', login)
     return
   }
+
+  try {
   const user = await auth0.getUser();
   console.log(user)     //debug
+  } 
+  catch (err) {
+    console.error(`auth0_component error at getUser: ${err}`)
+    errorNode.textContent = err;
+    Streamlit.setFrameHeight()
+  }
   let token = false
 
   try {
