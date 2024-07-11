@@ -33,6 +33,7 @@ const logout = async () => {
 
 const login = async () => {
   button.textContent = 'working...'
+  errorNode.textContent = ''
   console.log('Callback urls set to: ', getOriginUrl())
   auth0 = await createAuth0Client({
     domain: domain,
