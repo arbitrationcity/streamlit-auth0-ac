@@ -52,8 +52,7 @@ const login = async () => {
     errorNode.textContent = ''
   }
   catch (err) {
-    console.error(`auth0_component error: ${err}`)
-    console.log(`auth0_component url: ${window.location.host} - ${window.location.pathname} - ${window.location.search}`)//debug
+    console.error(`auth0_component error at loginWithPopup: ${err}`)
     errorNode.textContent = err;
     Streamlit.setFrameHeight()
     button.textContent = "Login"
