@@ -72,7 +72,6 @@ const login = async () => {
     errorNode.textContent = err;
     Streamlit.setFrameHeight()
   }
-  let token = false
 
   try {
     console.log(`DEBUG: trying auth0.getTokenSilently()`) //debug
