@@ -21,6 +21,8 @@ let client_id
 let domain
 let audience
 let auth0
+let token
+let user
 
 const logout = async () => {
   auth0.logout({ returnTo: getOriginUrl() })
