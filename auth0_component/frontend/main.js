@@ -81,7 +81,7 @@ const login = async () => {
     console.log(`DEBUG: token: ${token}`)   //debug
   }
   catch (err) {
-    console.(`DEBUG: auth0_component error at auth0.getTokenSilently()`) //debug
+    console.error(`DEBUG: auth0_component error at auth0.getTokenSilently()`) //debug
     if (err.error === 'consent_required' || err.error === 'login_required') {
       console.log(`${err.error}. Asking user for permission to their profile`)
       token = await auth0.getTokenWithPopup({
