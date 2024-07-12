@@ -11,7 +11,6 @@ button.textContent = "Login"
 
 // set flex column so the error message appears under the button
 div.style = "display: flex; flex-direction: column; margin: 0; padding: 10px;"
-//TODO: set errorDiv.style height to 0 when empty (default). set it to ~40px (?) when showing message. set iframe height attr to height+40. 
 const errorDiv = div.appendChild(document.createElement("div"))
 errorDiv.className = "error"
 errorDiv.style = "display: block; padding: 4px; color: rgba(255, 108, 108, .8); font-family: 'Source Sans Pro', sans-serif; font-size: .95rem;"
