@@ -11,7 +11,6 @@ button.textContent = "Login"
 
 // set flex column so the error message appears under the button
 div.style = "display: flex; flex-direction: column; margin: 0; padding: 10px;"
-//TODO: set errorDiv.style height to 0 when empty (default). set it to ~40px (?) when showing message. set iframe height attr to height+40. 
 const errorDiv = div.appendChild(document.createElement("div"))
 errorDiv.className = "error"
 errorDiv.style = "display: block; padding: 4px; color: rgba(255, 108, 108, .8); font-family: 'Source Sans Pro', sans-serif; font-size: .95rem;"
@@ -22,6 +21,8 @@ let client_id
 let domain
 let audience
 let auth0
+let token
+let user
 
 const logout = async () => {
   auth0.logout({ returnTo: getOriginUrl() })
@@ -33,6 +34,7 @@ const logout = async () => {
 
 const login = async () => {
   button.textContent = 'working...'
+  errorNode.textContent = ''
   console.log('Callback urls set to: ', getOriginUrl())
   auth0 = await createAuth0Client({
     domain: domain,
@@ -40,41 +42,55 @@ const login = async () => {
     redirect_uri: getOriginUrl(),
     audience: audience,
     useRefreshTokens: true,
-    cacheLocation: "localstorage",
+    // cacheLocation: "localstorage",
   });
 
   // Remove the event listener for login before adding a new one for logout
   button.removeEventListener('click', login);
 
   try {
+    console.log(`DEBUG: trying auth0.loginWithPopup()`) //debug
     await auth0.loginWithPopup();
     errorNode.textContent = ''
   }
   catch (err) {
-    console.error(err)
-    errorNode.textContent = `Popup blocked, please try again or enable popups` + String.fromCharCode(160)
-    //TODO: handle the actual errors that come in and don't assume. They are returned as query params
+    console.error(`DEBUG: auth0_component error at loginWithPopup: ${err}`)
+    errorNode.textContent = err;
+    Streamlit.setFrameHeight()
+    button.textContent = "Login"
+    button.removeEventListener('click', logout)
+    button.addEventListener('click', login)
     return
   }
-  const user = await auth0.getUser();
-  console.log(user)     //debug
-  let token = false
 
   try {
+    console.log(`DEBUG: trying auth0.getUser()`) //debug
+    user = await auth0.getUser();
+  } 
+  catch (err) {
+    console.error(`DEBUG: auth0_component error at getUser: ${err}`)
+    errorNode.textContent = err;
+    Streamlit.setFrameHeight()
+  }
+
+  try {
+    console.log(`DEBUG: trying auth0.getTokenSilently()`) //debug
     token = await auth0.getTokenSilently({
       audience: audience,
     });
+    console.log(`DEBUG: token: ${token}`)   //debug
   }
-  catch (error) {
-    if (error.error === 'consent_required' || error.error === 'login_required') {
-      console.log('asking user for permission to their profile')
+  catch (err) {
+    console.(`DEBUG: auth0_component error at auth0.getTokenSilently()`) //debug
+    if (err.error === 'consent_required' || err.error === 'login_required') {
+      console.log(`${err.error}. Asking user for permission to their profile`)
       token = await auth0.getTokenWithPopup({
         audience: audience,
         scope: "read:current_user",
       });
-      console.log(token)    //debug
+      console.log(`DEBUG: token: ${token}`)   //debug
     }
-    else { console.error(error) }
+    else { console.error(err) }
   }
 
   let userCopy = JSON.parse(JSON.stringify(user));
