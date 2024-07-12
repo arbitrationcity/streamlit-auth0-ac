@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="streamlit-auth0-ac",
-    version="0.2.3",
+    version="0.2.4",
     author="Paul Marini",
     author_email="paul.marini@arbi.city",
     description="Login/logout button for auth0",
