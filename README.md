@@ -18,7 +18,7 @@
 
 
 ## PRODUCTION Installation
-1. If any changes were made, update the version in setup.py, rebuild the javascript as step 4 abobe and push to the Production branch.  The frontend/dist/ must be included.
+1. If any changes were made, update the version in setup.py, rebuild the javascript as step 4 abobe and push to the Production branch.  The frontend/dist/ directory must be included.
 
 2. Install directly from the production branch to your project:
   `pip install git+https://github.com/arbitrationcity/streamlit-auth0-ac.git@production`
