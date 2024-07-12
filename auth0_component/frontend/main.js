@@ -49,11 +49,12 @@ const login = async () => {
   button.removeEventListener('click', login);
 
   try {
+    console.log(`DEBUG: trying auth0.loginWithPopup()`) //debug
     await auth0.loginWithPopup();
     errorNode.textContent = ''
   }
   catch (err) {
-    console.error(`auth0_component error at loginWithPopup: ${err}`)
+    console.error(`DEBUG: auth0_component error at loginWithPopup: ${err}`)
     errorNode.textContent = err;
     Streamlit.setFrameHeight()
     button.textContent = "Login"
@@ -63,31 +64,34 @@ const login = async () => {
   }
 
   try {
-  const user = await auth0.getUser();
-  console.log(user)     //debug
+    console.log(`DEBUG: trying auth0.getUser()`) //debug
+    user = await auth0.getUser();
   } 
   catch (err) {
-    console.error(`auth0_component error at getUser: ${err}`)
+    console.error(`DEBUG: auth0_component error at getUser: ${err}`)
     errorNode.textContent = err;
     Streamlit.setFrameHeight()
   }
   let token = false
 
   try {
+    console.log(`DEBUG: trying auth0.getTokenSilently()`) //debug
     token = await auth0.getTokenSilently({
       audience: audience,
     });
+    console.log(`DEBUG: token: ${token}`)   //debug
   }
-  catch (error) {
-    if (error.error === 'consent_required' || error.error === 'login_required') {
-      console.log('asking user for permission to their profile')
+  catch (err) {
+    console.(`DEBUG: auth0_component error at auth0.getTokenSilently()`) //debug
+    if (err.error === 'consent_required' || err.error === 'login_required') {
+      console.log(`${err.error}. Asking user for permission to their profile`)
       token = await auth0.getTokenWithPopup({
         audience: audience,
         scope: "read:current_user",
       });
-      console.log(token)    //debug
+      console.log(`DEBUG: token: ${token}`)   //debug
     }
-    else { console.error(error) }
+    else { console.error(err) }
   }
 
   let userCopy = JSON.parse(JSON.stringify(user));
