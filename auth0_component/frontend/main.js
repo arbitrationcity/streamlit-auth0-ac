@@ -42,7 +42,7 @@ const login = async () => {
     redirect_uri: getOriginUrl(),
     audience: audience,
     useRefreshTokens: true,
-    cacheLocation: "localstorage",
+    // cacheLocation: "localstorage",
   });
 
   // Remove the event listener for login before adding a new one for logout
