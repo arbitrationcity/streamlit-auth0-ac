@@ -18,9 +18,10 @@
 
 
 ## PRODUCTION Installation
-1. Install directly from the production branch:
+1. If any changes were made, update the version in setup.py, rebuild the javascript as step 4 abobe and push to the Production branch.  The frontend/dist/ must be included.
 
-2. `pip install git+https://github.com/arbitrationcity/streamlit-auth0-ac.git@production`
+2. Install directly from the production branch to your project:
+  `pip install git+https://github.com/arbitrationcity/streamlit-auth0-ac.git@production`
 
 
 ## Setup
@@ -49,15 +50,9 @@ st.write(user_info)
 `user_info` will now contain your user's information 
 
 
-## Todo
 
-- Pass all info through JWT, at the moment the `sub` field is the only field assing through verification
-- Test with other providers, only Google tested 
-
-
-
-## Deploy
+<!-- ## Deploy
 
 - `Change version in setup.py`
 - `cd auth0_component/frontend/  && npm run build && cd .. && cd .. && rm -rf dist/* && python setup.py sdist bdist_wheel`
-- `twine upload dist/*`
+- `twine upload dist/*` -->
